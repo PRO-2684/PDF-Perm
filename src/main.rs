@@ -1,9 +1,6 @@
 use env_logger::Env;
 use log::{debug, error, info};
-use lopdf::{
-    Document, EncryptionState, Error, Permissions, Result as PdfResult,
-    encryption::PasswordAlgorithm,
-};
+use lopdf::{Document, Permissions, Result as PdfResult};
 use pdf_perm::PdfPerm;
 use std::io::Write;
 
@@ -19,27 +16,30 @@ fn main() -> PdfResult<()> {
         unimplemented!("Does not support encrypted PDFs");
     }
 
-    // Read the password algorithm
-    let password_algorithm = PasswordAlgorithm::try_from(&doc);
-    debug!("Password Algorithm: {password_algorithm:?}");
-
     // Read the encryption state
     debug!("Encryption State: {:?}", doc.encryption_state);
 
     // Read permissions
-    let allowed = doc
-        .encryption_state
-        .map(|state| state.permissions())
-        .unwrap_or_else(|| {
-            info!("No permissions found, using default");
-            Permissions::default()
-        });
+    let allowed = doc.permissions().unwrap_or_else(|| {
+        info!("No permissions found, using default");
+        Permissions::default()
+    });
     let disallowed = Permissions::from_bits_truncate(!allowed.bits());
 
     info!("Allowed Permissions: {allowed:?}");
     info!("Disallowed Permissions: {disallowed:?}");
 
     // Allow all permissions (Permissions::all())
+    doc.set_permissions(Permissions::all())?;
+    info!("Set permissions to all");
+
+    // Save the document if an output path is provided
+    if let Some(output_path) = std::env::args().nth(2) {
+        info!("Saving document to {output_path}");
+        doc.save(output_path)?;
+    } else {
+        info!("No output path provided, not saving");
+    }
 
     Ok(())
 }
