@@ -20,9 +20,16 @@ pdf-perm +c no-copy.pdf copy.pdf
 
 Here's a list of permissions this crate is capable of handling:
 
-| Short Flag | Long Flag | Description |
-| - | - | - |
-| `c` | `copy` | Allows copying |
+| Short Flag | Long Flag |
+| - | - |
+| `p` | [P]RINTABLE |
+| `m` | [M]ODIFIABLE |
+| `c` | [C]OPYABLE |
+| `a` | [A]NNOTABLE |
+| `f` | [F]ILLABLE |
+| `x` | COPYABLE_FOR_ACCESSIBILITY |
+| `s` | A[S]SEMBLABLE |
+| `q` | PRINTABLE_IN_HIGH_[Q]UALITY |
 
 ## Removing Password?
 
@@ -34,6 +41,7 @@ Consider using [pdfrip](https://github.com/mufeedvh/pdfrip) instead.
     - [ ] `-`, `+`, `=`
     - [ ] `-R` for recursive
     - [ ] `--reference` for reference file
-- [ ] Full PDF permission support
+- [ ] Handle filenames starting with `-`, `+`, `=`
+- [ ] Set to `None` if permissions are default
 - [ ] Preserve `EncryptionVersion`
 - [ ] Allow specifying `EncryptionVersion` if not present
