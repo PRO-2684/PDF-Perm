@@ -2,6 +2,14 @@
 name = "pdf-perm"
 version = "0.1.0"
 edition = "2024"
+readme = "README.md"
+description = "Change the permissions of a PDF file."
+keywords = ["cli", "pdf", "permissions", "metadata", "file"]
+categories = ["command-line-utilities", "encoding", "security"]
+include = ["src", "README.md", "LICENSE"]
+repository = "https://github.com/PRO-2684/PDF-Perm"
+license = "MIT"
+authors = ["PRO-2684"]
 
 [dependencies]
 anyhow = { version = "1.0.97", optional = true }

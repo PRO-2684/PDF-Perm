@@ -39,7 +39,7 @@ fn main() -> Result<()> {
                 }
             }
             '=' => {
-                let permission = Permissions::from_str(&arg);
+                let permission = Permissions::from_str(&arg[1..]);
                 mods.push(PermissionMod::Exact(permission));
             }
             _ => {
