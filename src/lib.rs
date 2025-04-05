@@ -34,7 +34,7 @@ impl PdfPerm for Document {
         };
         let state: EncryptionState = version.try_into()?;
         debug!("Encryption state: {state:?}");
-        self.encryption_state.replace(state);
+        self.encrypt(&state)?;
 
         Ok(())
     }
