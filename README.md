@@ -31,6 +31,9 @@ Consider using [pdfrip](https://github.com/mufeedvh/pdfrip) instead.
 ## TODO
 
 - [ ] Implement `chmod` like syntax
+    - [ ] `-`, `+`, `=`
+    - [ ] `-R` for recursive
+    - [ ] `--reference` for reference file
 - [ ] Full PDF permission support
 - [ ] Preserve `EncryptionVersion`
 - [ ] Allow specifying `EncryptionVersion` if not present

@@ -1,27 +1,31 @@
+use anyhow::{Context, Result, bail};
 use env_logger::Env;
-use log::{debug, error, info};
-use lopdf::{Document, Permissions, Result as PdfResult};
+use log::{debug, info};
+use lopdf::{Document, Permissions};
 use pdf_perm::PdfPerm;
 use std::io::Write;
 
-fn main() -> PdfResult<()> {
+fn main() -> Result<()> {
+    // Setup the logger
     setup_logger();
+
     let path = std::env::args()
         .nth(1)
         .unwrap_or("tests/no-copy.pdf".to_string());
+
     // Open a PDF file
-    let mut doc = Document::load(path)?;
+    let mut doc = Document::load(&path)?;
     if doc.is_encrypted() {
-        error!("Does not support encrypted PDFs");
-        unimplemented!("Does not support encrypted PDFs");
+        bail!("Encrypted PDFs are not supported");
     }
 
     // Read the encryption state
     debug!("Encryption State: {:?}", doc.encryption_state);
 
     // Read permissions
+    info!("Reading original permissions");
     let allowed = doc.permissions().unwrap_or_else(|| {
-        info!("No permissions found, using default");
+        debug!("No permissions found, using default");
         Permissions::default()
     });
     let disallowed = Permissions::from_bits_truncate(!allowed.bits());
@@ -30,13 +34,15 @@ fn main() -> PdfResult<()> {
     info!("Disallowed Permissions: {disallowed:?}");
 
     // Allow all permissions (Permissions::all())
-    doc.set_permissions(Permissions::all())?;
-    info!("Set permissions to all");
+    info!("Setting permissions to all");
+    doc.set_permissions(Permissions::all())
+        .with_context(|| format!("Failed to set permissions for given document: {path}"))?;
 
     // Save the document if an output path is provided
     if let Some(output_path) = std::env::args().nth(2) {
         info!("Saving document to {output_path}");
-        doc.save(output_path)?;
+        doc.save(&output_path)
+            .with_context(|| format!("Failed to save document to {output_path}"))?;
     } else {
         info!("No output path provided, not saving");
     }

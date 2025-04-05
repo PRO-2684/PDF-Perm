@@ -4,6 +4,14 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-env_logger = "0.11.8"
+anyhow = { version = "1.0.97", optional = true }
+env_logger = { version = "0.11.8", optional = true }
 log = "0.4.27"
 lopdf = "0.36.0"
+
+[[bin]]
+name = "pdf-perm"
+required-features = ["cli"]
+
+[features]
+cli = ["anyhow", "env_logger"]

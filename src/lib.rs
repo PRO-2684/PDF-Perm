@@ -4,7 +4,6 @@ use lopdf::{Document, EncryptionState, EncryptionVersion, Permissions, Result as
 
 /// A trait that provides methods for getting and setting PDF permissions.
 pub trait PdfPerm {
-    // Required methods
     /// Returns the permissions of the PDF document.
     fn permissions(&self) -> Option<Permissions>;
     /// Sets the permissions of the PDF document.
@@ -29,4 +28,9 @@ impl PdfPerm for Document {
 
         Ok(())
     }
+}
+
+#[cfg(test)]
+mod tests {
+    // TODO: Add in-mem tests
 }
