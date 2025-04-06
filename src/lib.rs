@@ -7,6 +7,7 @@
 #![deny(missing_docs)]
 #![warn(clippy::all, clippy::nursery, clippy::pedantic, clippy::cargo)]
 
+use bitflags::Flags;
 use log::{debug, error, warn};
 use lopdf::{
     Document, EncryptionState, EncryptionVersion, Error, Permissions, Result as PdfResult,
@@ -49,52 +50,49 @@ impl PdfPerm for Document {
     }
 }
 
-/// Trait for [`Permissions`] to provide parsing and modification functionality.
-pub trait PermissionExt {
-    /// Parses a character into a [`Permissions`], with only one permission bit set.
-    fn from_char(c: char) -> Option<Permissions>;
-    /// Parses a string into a [`Permissions`], with multiple permission bits set.
+/// Trait for [`Flags`] to provide short flag functionality.
+pub trait FlagsExt: Flags + Copy {
+    // Required constant
+    /// The set of defined short flags. Must be of the same length as [`Flags::FLAGS`].
+    const SHORT_FLAGS: &'static [char];
+
+    // Provided methods
+    /// Parses a character into a reference to [`Flags`].
+    fn from_char(c: char) -> Option<Self> {
+        if c == '*' {
+            return Some(Self::all());
+        }
+        let index = Self::SHORT_FLAGS.iter().position(|&flag| flag == c)?;
+        Some(Self::FLAGS.get(index)?.value().clone())
+    }
+    /// Parses a string into self, with given short flags.
     #[must_use]
-    fn from_str(s: &str) -> Permissions {
-        let mut permissions = Permissions::empty();
+    fn from_str(s: &str) -> Self {
+        let mut flags = Self::empty();
         for c in s.chars() {
-            if let Some(permission) = Self::from_char(c) {
-                permissions.insert(permission);
+            if let Some(flag) = Self::from_char(c) {
+                flags.insert(flag);
             } else {
                 warn!("Invalid permission character: {c}");
             }
         }
-        permissions
+        flags
     }
-    /// Applies the given permission modification string. See `Permission` section of the README.
-    fn apply_modification(&mut self, modification: &str);
-}
-
-impl PermissionExt for Permissions {
-    fn from_char(c: char) -> Option<Self> {
-        match c {
-            'p' => Some(Self::PRINTABLE),
-            'm' => Some(Self::MODIFIABLE),
-            'c' => Some(Self::COPYABLE),
-            'a' => Some(Self::ANNOTABLE),
-            'f' => Some(Self::FILLABLE),
-            'x' => Some(Self::COPYABLE_FOR_ACCESSIBILITY),
-            's' => Some(Self::ASSEMBLABLE),
-            'q' => Some(Self::PRINTABLE_IN_HIGH_QUALITY),
-            '*' => Some(Self::all()),
-            _ => None,
-        }
-    }
+    /// Applies the given modification string.
     fn apply_modification(&mut self, modification: &str) {
         let (first, rest) = modification.split_at(1);
-        let permission = Self::from_str(rest);
+        let flags_mod = Self::from_str(rest);
         match first {
-            "+" => self.insert(permission),
-            "-" => self.remove(permission),
-            "=" => *self = permission,
-            _ => warn!("Invalid permission modification: {modification}"),
+            "+" => self.insert(flags_mod),
+            "-" => self.remove(flags_mod),
+            "=" => *self = flags_mod,
+            _ => warn!("Invalid modification: {modification}"),
         }
     }
+}
+
+impl FlagsExt for Permissions {
+    const SHORT_FLAGS: &'static [char] = &['p', 'm', 'c', 'a', 'f', 'x', 's', 'q'];
 }
 
 #[cfg(test)]
@@ -103,25 +101,18 @@ mod tests {
 
     // TODO: Test `PdfPerm` trait
 
-    // Test `PermissionExt` trait
+    // Test `FlagsExt` trait
     #[test]
-    fn test_from_char() {
-        let printable = Permissions::from_char('p');
-        assert_eq!(printable, Some(Permissions::PRINTABLE));
-        let modifiable = Permissions::from_char('m');
-        assert_eq!(modifiable, Some(Permissions::MODIFIABLE));
-        let copyable = Permissions::from_char('c');
-        assert_eq!(copyable, Some(Permissions::COPYABLE));
-        let not_found = Permissions::from_char('z');
-        assert_eq!(not_found, None);
-        let all = Permissions::from_char('*');
-        assert_eq!(all, Some(Permissions::all()));
+    fn test_from_str_1() {
+        let permissions = Permissions::from_str("pmc");
+        let expected = Permissions::PRINTABLE | Permissions::MODIFIABLE | Permissions::COPYABLE;
+        assert_eq!(permissions, expected);
     }
 
     #[test]
-    fn test_from_str() {
-        let permissions = Permissions::from_str("pmc");
-        let expected = Permissions::PRINTABLE | Permissions::MODIFIABLE | Permissions::COPYABLE;
+    fn test_from_str_2() {
+        let permissions = Permissions::from_str("*");
+        let expected = Permissions::all();
         assert_eq!(permissions, expected);
     }
 
