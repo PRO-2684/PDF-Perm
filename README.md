@@ -1,5 +1,13 @@
 # PDF-Perm
 
+[![GitHub License](https://img.shields.io/github/license/PRO-2684/PDF-Perm?logo=opensourceinitiative)](https://github.com/PRO-2684/PDF-Perm/blob/main/LICENSE)
+[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/PRO-2684/PDF-Perm/release.yml?logo=githubactions)](https://github.com/PRO-2684/PDF-Perm/blob/main/.github/workflows/release.yml)
+[![GitHub Release](https://img.shields.io/github/v/release/PRO-2684/PDF-Perm?logo=githubactions)](https://github.com/PRO-2684/PDF-Perm/releases)
+[![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/PRO-2684/PDF-Perm/total?logo=github)](https://github.com/PRO-2684/PDF-Perm/releases)
+[![Crates.io Version](https://img.shields.io/crates/v/pdf-perm?logo=rust)](https://crates.io/crates/pdf-perm)
+[![Crates.io Total Downloads](https://img.shields.io/crates/d/pdf-perm?logo=rust)](https://crates.io/crates/pdf-perm)
+[![docs.rs](https://img.shields.io/docsrs/pdf-perm?logo=rust)](https://docs.rs/pdf-perm)
+
 Change the permissions of a PDF file.
 
 ## Installation
@@ -50,6 +58,14 @@ pdf-perm =pma my.pdf
 ```
 
 This will set the permissions to `PRINTABLE`, `MODIFIABLE`, and `ANNOTABLE` and remove all other permissions.
+
+To allow all permissions, use `+*` or `=*`:
+
+```shell
+pdf-perm +* confidential.pdf declassified.pdf
+```
+
+To disallow all permissions, use `-*`.
 
 ## Usage
 
