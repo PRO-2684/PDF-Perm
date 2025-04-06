@@ -1,4 +1,5 @@
 use anyhow::{Context, Result, bail};
+use bitflags::Flags;
 use env_logger::Env;
 use log::{debug, info};
 use lopdf::{Document, Permissions};
@@ -9,30 +10,33 @@ fn main() -> Result<()> {
     // Setup the logger
     setup_logger();
 
-    // Parsing command line arguments
+    // Collect command line arguments
     let mut iter = std::env::args();
     let program_name = iter.next().unwrap_or_else(|| "pdf-perm".to_string());
     let args: Vec<_> = iter.collect();
     let mut perm_mod = None;
 
+    // Interpret arguments
     let (input_path, output_path) = match args.len() {
         0 => {
-            println!("Usage: {program_name} [PERMISSION] <INPUT> [OUTPUT]");
+            info!("Usage: {program_name} [PERMISSION] <INPUT> [OUTPUT]");
+            info!("Supported permissions:");
+            display(Permissions::default());
             return Ok(());
         }
-        1 => (&args[0], &args[0]),
-        2 => {
+        1 => (&args[0], &args[0]), // <INPUT>
+        2 => { // [PERMISSION] <INPUT>
             perm_mod.replace(&args[0]);
             (&args[1], &args[1])
         }
-        3 => {
+        3 => { // [PERMISSION] <INPUT> [OUTPUT]
             perm_mod.replace(&args[0]);
             (&args[1], &args[2])
         }
         _ => bail!("Invalid number of arguments"),
     };
 
-    // Open a PDF file
+    // Open the PDF document
     let mut doc = Document::load(&input_path)?;
     debug!("Encryption state: {:?}", doc.encryption_state);
 
@@ -43,8 +47,8 @@ fn main() -> Result<()> {
         Permissions::default()
     });
 
-    info!("Allowed Permissions: {perm:?}");
-    info!("Disallowed Permissions: {:?}", Permissions::from_bits_truncate(!perm.bits()));
+    info!("Original permissions:");
+    display(perm);
 
     // Early exit if no modifications are specified
     let Some(perm_mod) = perm_mod else {
@@ -54,7 +58,10 @@ fn main() -> Result<()> {
 
     // Modify permissions
     perm.apply_modification(perm_mod);
-    info!("Modified Permissions: {perm:?}");
+
+    info!("Modified permissions:");
+    display(perm);
+
     doc.set_permissions(perm)
         .with_context(|| format!("Failed to set permissions for given document: {input_path}"))?;
 
@@ -75,4 +82,17 @@ fn setup_logger() {
             writeln!(buf, "[{style}{level}{style:#}] {}", record.args())
         })
         .init();
+}
+
+/// Display permissions in the format of a list.
+fn display(permissions: Permissions) {
+    for flag in Permissions::FLAGS {
+        let perm = flag.value();
+        let name = flag.name();
+        if permissions.contains(*perm) {
+            info!("+ {name}");
+        } else {
+            info!("- {name}");
+        }
+    }
 }

@@ -582,6 +582,7 @@ name = "pdf-perm"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "bitflags",
  "env_logger",
  "log",
  "lopdf",

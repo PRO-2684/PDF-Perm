@@ -126,12 +126,9 @@ Path to the output PDF file. If not specified, the input file will be modified i
 
 ## TODO
 
-- [ ] Implement `chmod` like syntax
-    - [x] `-`, `+`, `=`
-    - [ ] Octals
+- [x] Implement `chmod` like syntax (`-`, `+`, `=`)
 - [x] Extended syntax
     - [x] `*` for all permissions
-- [x] Handle filenames starting with `-`, `+`, `=`
 - [ ] Set to `None` if permissions are default
 - [ ] If executed with last part of `argv[0]` matches `(pdf-)?desec(ure)?(\.exe)?` (case-insensitive), defaults to enabling all permissions instead of inheriting from the original file
 - [ ] Preserve `EncryptionVersion`
