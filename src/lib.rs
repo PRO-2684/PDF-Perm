@@ -50,14 +50,15 @@ impl PdfPerm for Document {
     }
 }
 
+// TODO: Decoupling `ShortFlags` into a separate crate `short-flags`?
 /// Trait for [`Flags`] to provide short flag functionality.
-pub trait FlagsExt: Flags + Copy {
+pub trait ShortFlags: Flags + Copy {
     // Required constant
     /// The set of defined short flags. Must be of the same length as [`Flags::FLAGS`].
     const SHORT_FLAGS: &'static [char];
 
     // Provided methods
-    /// Parses a character into a reference to [`Flags`].
+    /// Parses a character into a [`Flags`].
     fn from_char(c: char) -> Option<Self> {
         if c == '*' {
             return Some(Self::all());
@@ -91,7 +92,7 @@ pub trait FlagsExt: Flags + Copy {
     }
 }
 
-impl FlagsExt for Permissions {
+impl ShortFlags for Permissions {
     const SHORT_FLAGS: &'static [char] = &['p', 'm', 'c', 'a', 'f', 'x', 's', 'q'];
 }
 
@@ -101,7 +102,7 @@ mod tests {
 
     // TODO: Test `PdfPerm` trait
 
-    // Test `FlagsExt` trait
+    // Test `ShortFlags` trait
     #[test]
     fn test_from_str_1() {
         let permissions = Permissions::from_str("pmc");

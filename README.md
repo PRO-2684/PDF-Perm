@@ -20,8 +20,7 @@ cargo binstall pdf-perm
 
 ### Downloading from Releases
 
-Navigate to the [Releases page](https://github.com/PRO-2684/PDF-Perm/releases) and download respective binary for your
- platform. Make sure to give it execute permissions.
+Navigate to the [Releases page](https://github.com/PRO-2684/PDF-Perm/releases) and download respective binary for your platform. Make sure to give it execute permissions.
 
 ### Compiling from Source
 
@@ -37,7 +36,7 @@ The usage is quite similar to `chmod` command:
 pdf-perm +c no-copy.pdf
 ```
 
-This will overwrite `no-copy.pdf` and make it copiable. Bugs may arise, so make sure to have a backup if it matters.
+This will modify `no-copy.pdf` and make it copiable. Bugs may arise, so make sure to have a backup if it matters.
 
 By specifying another path, it will write to there instead of overwriting the original file:
 
@@ -75,7 +74,7 @@ pdf-perm [PERMISSION] <INPUT> [OUTPUT]
 
 | Argument Length | Interpretation                  |
 | --------------- | ------------------------------- |
-| 0               | Print help                      |
+| 0               | Print help and permissions      |
 | 1               | `<INPUT>`                       |
 | 2               | `[PERMISSION] <INPUT>`          |
 | 3               | `[PERMISSION] <INPUT> [OUTPUT]` |

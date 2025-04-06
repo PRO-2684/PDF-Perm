@@ -3,7 +3,7 @@ use bitflags::Flags;
 use env_logger::Env;
 use log::{debug, info};
 use lopdf::{Document, Permissions};
-use pdf_perm::{PdfPerm, FlagsExt};
+use pdf_perm::{PdfPerm, ShortFlags};
 use std::io::Write;
 
 fn main() -> Result<()> {
@@ -19,9 +19,10 @@ fn main() -> Result<()> {
     // Interpret arguments
     let (input_path, output_path) = match args.len() {
         0 => {
-            println!("Usage: {program_name} [PERMISSION] <INPUT> [OUTPUT]");
+            println!("Usage: {program_name} [PERMISSION] <INPUT> [OUTPUT]\n");
             println!("Supported permissions: {}", display_short(Permissions::all()));
             display_long(Permissions::all());
+            println!("\nYou can use * to represent all permissions.");
             return Ok(());
         }
         1 => (&args[0], &args[0]), // <INPUT>
