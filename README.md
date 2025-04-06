@@ -58,13 +58,11 @@ pdf-perm =pma my.pdf
 
 This will set the permissions to `PRINTABLE`, `MODIFIABLE`, and `ANNOTABLE` and remove all other permissions.
 
-To allow all permissions, use `+*` or `=*`:
+To allow all permissions, use `+*` or `=*`; to disallow all permissions, use `-*`:
 
 ```shell
 pdf-perm +* confidential.pdf declassified.pdf
 ```
-
-To disallow all permissions, use `-*`.
 
 ## Usage
 
@@ -102,7 +100,11 @@ Then, you can specify the short flags for the permissions you want to add, remov
 | 12  | `q`        | PRINTABLE_IN_HIGH_**Q**UALITY |
 | /   | `*`        | All permissions               |
 
-See the [PDF 1.4 ref](https://opensource.adobe.com/dc-acrobat-sdk-docs/pdfstandards/pdfreference1.4.pdf), TABLE 3.15 for more details. Note that the index in the tables are 1-based.
+> [!NOTE]
+>
+> - The index in the tables are $1$-based.
+> - The actual permissions you see on PDF readers may differ from the ones you see using this tool. This is because some permissions imply others.
+> - See the [PDF 1.4 ref](https://opensource.adobe.com/dc-acrobat-sdk-docs/pdfstandards/pdfreference1.4.pdf), TABLE 3.15 for more details.
 
 If this argument is not specified, `pdf-perm` will print the permissions of the input file and exit.
 

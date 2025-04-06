@@ -40,11 +40,11 @@ fn main() -> Result<()> {
     };
 
     // Open the PDF document
+    info!("Reading document: {input_path}");
     let mut doc = Document::load(&input_path)?;
     debug!("Encryption state: {:?}", doc.encryption_state);
 
     // Read permissions
-    info!("Reading original permissions");
     let mut perm = doc.permissions();
     info!("Original permissions: {}", perm.summary());
 
@@ -64,7 +64,7 @@ fn main() -> Result<()> {
     // Save the document
     info!("Saving document to {output_path}");
     doc.save(&output_path)
-        .with_context(|| format!("Failed to save document to {output_path}"))?;
+        .with_context(|| format!("Failed to save document: {output_path}"))?;
 
     Ok(())
 }

@@ -65,7 +65,7 @@ pub trait ShortFlags: Flags + Copy {
             return Some(Self::all());
         }
         let index = Self::SHORT_FLAGS.iter().position(|&flag| flag == c)?;
-        Some(Self::FLAGS.get(index)?.value().clone())
+        Some(*Self::FLAGS.get(index)?.value())
     }
     /// Parses a string into self, with given short flags.
     #[must_use]
@@ -135,8 +135,7 @@ mod tests {
         let mut doc = create_test_document();
         assert_eq!(doc.permissions(), Permissions::default());
 
-        let pma_permissions =
-            Permissions::PRINTABLE | Permissions::MODIFIABLE | Permissions::ANNOTABLE;
+        let pma_permissions = Permissions::from_str("pma");
         doc.set_permissions(pma_permissions).unwrap();
 
         let mut buffer = Vec::new();
