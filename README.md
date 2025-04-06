@@ -36,15 +36,13 @@ The usage is quite similar to `chmod` command:
 pdf-perm +c no-copy.pdf
 ```
 
-This will modify `no-copy.pdf` and make it copiable. Bugs may arise, so make sure to have a backup if it matters.
-
-By specifying another path, it will write to there instead of overwriting the original file:
+This will modify `no-copy.pdf` and make it copiable. Bugs may arise, so make sure to backup if it matters. Alternatively, by specifying another path, this tool will write to there instead of overwriting the original file:
 
 ```shell
 pdf-perm +c no-copy.pdf can-copy.pdf
 ```
 
-To remove a permission, use `-`:
+To reject a permission, use `-`:
 
 ```shell
 pdf-perm -c can-copy.pdf no-copy.pdf
@@ -56,9 +54,9 @@ To set exactly the permissions you want, use `=`:
 pdf-perm =pma my.pdf
 ```
 
-This will set the permissions to `PRINTABLE`, `MODIFIABLE`, and `ANNOTABLE` and remove all other permissions.
+This will set the permissions to `PRINTABLE`, `MODIFIABLE`, and `ANNOTABLE` and reject all other permissions.
 
-To allow all permissions, use `+*` or `=*`; to disallow all permissions, use `-*`:
+To grant all permissions, use `+*` or `=*`; to reject all permissions, use `-*`:
 
 ```shell
 pdf-perm +* confidential.pdf declassified.pdf
@@ -82,11 +80,11 @@ pdf-perm [PERMISSION] <INPUT> [OUTPUT]
 
 The permission argument is a string that specify the permissions to be set on the PDF file. It must starts with one of the following:
 
-- `+`: to add permissions
-- `-`: to remove permissions
+- `+`: to grant permissions
+- `-`: to reject permissions
 - `=`: to set permissions exactly
 
-Then, you can specify the short flags for the permissions you want to add, remove, or set. Valid short flags and their [corresponding constant](https://docs.rs/lopdf/0.36.0/lopdf/encryption/struct.Permissions.html#impl-Permissions) in [`lopdf` crate](https://docs.rs/lopdf/0.36.0/lopdf/) are:
+Then, you can specify the short flags for the permissions you want to grant, reject, or set exactly. Valid short flags and their [corresponding constant](https://docs.rs/lopdf/0.36.0/lopdf/encryption/struct.Permissions.html#impl-Permissions) in [`lopdf` crate](https://docs.rs/lopdf/0.36.0/lopdf/) are:
 
 | #   | Short Flag | Constant                      |
 | --- | ---------- | ----------------------------- |

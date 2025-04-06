@@ -85,9 +85,9 @@ pub trait ShortFlags: Flags + Copy {
         let (first, rest) = modification.split_at(1);
         let flags_mod = Self::from_str(rest);
         match first {
-            "+" => self.insert(flags_mod),
-            "-" => self.remove(flags_mod),
-            "=" => *self = flags_mod,
+            "+" => self.insert(flags_mod), // Set given flags
+            "-" => self.remove(flags_mod), // Unset given flags
+            "=" => *self = flags_mod,      // Set to given flags
             _ => warn!("Invalid modification: {modification}"),
         }
     }
