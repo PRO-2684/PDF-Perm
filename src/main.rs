@@ -5,60 +5,32 @@ use lopdf::{Document, Permissions};
 use pdf_perm::{PdfPerm, PermissionExt};
 use std::io::Write;
 
-/// Modification of permissions
-enum PermissionMod {
-    /// Set to exactly the given permissions
-    Exact(Permissions),
-    /// Insert the given permissions
-    Insert(Permissions),
-    /// Remove the given permissions
-    Remove(Permissions),
-}
-
 fn main() -> Result<()> {
     // Setup the logger
     setup_logger();
 
-    // Parsing arguments
-    let mut mods = Vec::new();
-    let mut paths = (None, None);
-    for arg in std::env::args().skip(1) {
-        match arg.chars().next().expect("Argument is empty") {
-            '+' => {
-                let permission = Permissions::from_str(&arg[1..]);
-                mods.push(PermissionMod::Insert(permission));
-            }
-            '-' => {
-                // Check if the rest of the argument consists entirely of lowercase letters
-                let is_lowercase = arg[1..].chars().all(|c| c.is_ascii_lowercase());
-                if is_lowercase {
-                    let permission = Permissions::from_str(&arg[1..]);
-                    mods.push(PermissionMod::Remove(permission));
-                } else {
-                    todo!("Handle other arguments");
-                }
-            }
-            '=' => {
-                let permission = Permissions::from_str(&arg[1..]);
-                mods.push(PermissionMod::Exact(permission));
-            }
-            _ => {
-                if paths.0.is_none() {
-                    paths.0.replace(arg);
-                } else if paths.1.is_none() {
-                    paths.1.replace(arg);
-                } else {
-                    bail!("Too many paths provided");
-                }
-            }
-        }
-    }
+    // Parsing command line arguments
+    let mut iter = std::env::args();
+    let program_name = iter.next().unwrap_or_else(|| "pdf-perm".to_string());
+    let args: Vec<_> = iter.collect();
+    let mut perm_mod = None;
 
-    // Unwrapping paths
-    let Some(input_path) = &paths.0 else {
-        bail!("No input path provided");
+    let (input_path, output_path) = match args.len() {
+        0 => {
+            println!("Usage: {program_name} [PERMISSION] <INPUT> [OUTPUT]");
+            return Ok(());
+        }
+        1 => (&args[0], &args[0]),
+        2 => {
+            perm_mod.replace(&args[0]);
+            (&args[1], &args[1])
+        }
+        3 => {
+            perm_mod.replace(&args[0]);
+            (&args[1], &args[2])
+        }
+        _ => bail!("Invalid number of arguments"),
     };
-    let output_path = paths.1.as_ref().unwrap_or(&input_path);
 
     // Open a PDF file
     let mut doc = Document::load(&input_path)?;
@@ -66,37 +38,24 @@ fn main() -> Result<()> {
 
     // Read permissions
     info!("Reading original permissions");
-    let mut allowed = doc.permissions().unwrap_or_else(|| {
+    let mut perm = doc.permissions().unwrap_or_else(|| {
         debug!("No permissions found, using default");
         Permissions::default()
     });
-    let disallowed = Permissions::from_bits_truncate(!allowed.bits());
 
-    info!("Allowed Permissions: {allowed:?}");
-    info!("Disallowed Permissions: {disallowed:?}");
+    info!("Allowed Permissions: {perm:?}");
+    info!("Disallowed Permissions: {:?}", Permissions::from_bits_truncate(!perm.bits()));
 
     // Early exit if no modifications are specified
-    if mods.is_empty() {
+    let Some(perm_mod) = perm_mod else {
         info!("No modifications specified, exiting");
         return Ok(());
-    }
+    };
 
     // Modify permissions
-    for permission_mod in mods {
-        match permission_mod {
-            PermissionMod::Exact(exact) => {
-                allowed = exact;
-            }
-            PermissionMod::Insert(permissions) => {
-                allowed.insert(permissions);
-            }
-            PermissionMod::Remove(permissions) => {
-                allowed.remove(permissions);
-            }
-        }
-    }
-    info!("Modified Permissions: {allowed:?}");
-    doc.set_permissions(allowed)
+    perm.apply_modification(perm_mod);
+    info!("Modified Permissions: {perm:?}");
+    doc.set_permissions(perm)
         .with_context(|| format!("Failed to set permissions for given document: {input_path}"))?;
 
     // Save the document

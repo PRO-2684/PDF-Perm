@@ -2,7 +2,26 @@
 
 Change the permissions of a PDF file.
 
-## Usage
+## Installation
+
+### Using `binstall`
+
+```shell
+cargo binstall pdf-perm
+```
+
+### Downloading from Releases
+
+Navigate to the [Releases page](https://github.com/PRO-2684/PDF-Perm/releases) and download respective binary for your
+ platform. Make sure to give it execute permissions.
+
+### Compiling from Source
+
+```shell
+cargo install pdf-perm
+```
+
+## Examples
 
 The usage is quite similar to `chmod` command:
 
@@ -30,26 +49,55 @@ To set exactly the permissions you want, use `=`:
 pdf-perm =pma my.pdf
 ```
 
-This will set the permissions to `PRINTABLE`, `MODIFIABLE`, and `ANNOTABLE` and remove all other permissions. For a complete list of permissions, see the table below.
+This will set the permissions to `PRINTABLE`, `MODIFIABLE`, and `ANNOTABLE` and remove all other permissions.
 
-If multiple permission modifiers are used, they will be combined in the order they are specified.
+## Usage
 
-## Permissions
+```shell
+pdf-perm [PERMISSION] <INPUT> [OUTPUT]
+```
 
-Here's a list of permissions this crate is capable of handling:
+| Argument Length | Interpretation |
+| - | - |
+| 0 | Print help |
+| 1 | `<INPUT>` |
+| 2 | `[PERMISSION] <INPUT>` |
+| 3 | `[PERMISSION] <INPUT> [OUTPUT]` |
+| 4+ | Invalid |
 
-| # | Short Flag | Long Flag |
+### Permission
+
+The permission argument is a string that specify the permissions to be set on the PDF file. It must starts with one of the following:
+
+- `+`: to add permissions
+- `-`: to remove permissions
+- `=`: to set permissions exactly
+
+Then, you can specify the short flags for the permissions you want to add, remove, or set. Valid short flags and their [corresponding constant](https://docs.rs/lopdf/0.36.0/lopdf/encryption/struct.Permissions.html#impl-Permissions) in [`lopdf` crate](https://docs.rs/lopdf/0.36.0/lopdf/) are:
+
+| # | Short Flag | Constant |
 | - | - | - |
-|  2 | `p` | [P]RINTABLE |
-|  3 | `m` | [M]ODIFIABLE |
-|  4 | `c` | [C]OPYABLE |
-|  5 | `a` | [A]NNOTABLE |
-|  8 | `f` | [F]ILLABLE |
-|  9 | `x` | COPYABLE_FOR_ACCESSIBILITY |
-| 10 | `s` | A[S]SEMBLABLE |
-| 11 | `q` | PRINTABLE_IN_HIGH_[Q]UALITY |
+|  3 | `p` | [P]RINTABLE |
+|  4 | `m` | [M]ODIFIABLE |
+|  5 | `c` | [C]OPYABLE |
+|  6 | `a` | [A]NNOTABLE |
+|  9 | `f` | [F]ILLABLE |
+| 10 | `x` | COPYABLE_FOR_ACCESSIBILITY |
+| 11 | `s` | A[S]SEMBLABLE |
+| 12 | `q` | PRINTABLE_IN_HIGH_[Q]UALITY |
+|  / | `*` | All permissions |
 
-See the [PDF 1.4 ref](https://opensource.adobe.com/dc-acrobat-sdk-docs/pdfstandards/pdfreference1.4.pdf), TABLE 3.15 for more details. Note that the index in the table is 1-based, while the index in the table above is 0-based.
+See the [PDF 1.4 ref](https://opensource.adobe.com/dc-acrobat-sdk-docs/pdfstandards/pdfreference1.4.pdf), TABLE 3.15 for more details. Note that the index in the tables are 1-based.
+
+If this argument is not specified, `pdf-perm` will print the permissions of the input file and exit.
+
+### Input
+
+**Required**. Path to the input PDF file. This file will be modified in place unless an output path is specified.
+
+### Output
+
+Path to the output PDF file. If not specified, the input file will be modified in place.
 
 ## Caveats
 
@@ -64,11 +112,11 @@ See the [PDF 1.4 ref](https://opensource.adobe.com/dc-acrobat-sdk-docs/pdfstanda
 
 - [ ] Implement `chmod` like syntax
     - [x] `-`, `+`, `=`
-    - [ ] `-R` for recursive
-    - [ ] `--reference` for reference file
-- [ ] Extended syntax
-    - [ ] `!` for negation
-- [ ] Handle filenames starting with `-`, `+`, `=`
+    - [ ] Octals
+- [x] Extended syntax
+    - [x] `*` for all permissions
+- [x] Handle filenames starting with `-`, `+`, `=`
 - [ ] Set to `None` if permissions are default
+- [ ] If executed with last part of `argv[0]` matches `(pdf-)?desec(ure)?(\.exe)?` (case-insensitive), defaults to enabling all permissions instead of inheriting from the original file
 - [ ] Preserve `EncryptionVersion`
 - [ ] Allow specifying `EncryptionVersion` if not present
