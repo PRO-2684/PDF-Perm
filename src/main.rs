@@ -26,15 +26,17 @@ fn main() -> Result<()> {
             return Ok(());
         }
         1 => (&args[0], &args[0]), // <INPUT>
-        2 => { // [PERMISSION] <INPUT>
+        2 => {
+            // [PERMISSION] <INPUT>
             perm_mod.replace(&args[0]);
             (&args[1], &args[1])
         }
-        3 => { // [PERMISSION] <INPUT> [OUTPUT]
+        3 => {
+            // [PERMISSION] <INPUT> [OUTPUT]
             perm_mod.replace(&args[0]);
             (&args[1], &args[2])
         }
-        _ => bail!("Invalid number of arguments"),
+        _ => bail!("Too many arguments"),
     };
 
     // Open the PDF document
@@ -43,10 +45,7 @@ fn main() -> Result<()> {
 
     // Read permissions
     info!("Reading original permissions");
-    let mut perm = doc.permissions().unwrap_or_else(|| {
-        debug!("No permissions found, using default");
-        Permissions::default()
-    });
+    let mut perm = doc.permissions();
     info!("Original permissions: {}", perm.summary());
 
     // Early exit if no modifications are specified

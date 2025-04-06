@@ -16,7 +16,7 @@ use lopdf::{
 /// Trait for non-encrypted PDF [`Document`]s, allowing for easy getting and setting of [`Permissions`].
 pub trait PdfPerm {
     /// Returns the permissions of the PDF document.
-    fn permissions(&self) -> Option<Permissions>;
+    fn permissions(&self) -> Permissions;
     /// Sets the permissions of the PDF document.
     ///
     /// # Errors
@@ -26,10 +26,11 @@ pub trait PdfPerm {
 }
 
 impl PdfPerm for Document {
-    fn permissions(&self) -> Option<Permissions> {
+    fn permissions(&self) -> Permissions {
         self.encryption_state
             .as_ref()
             .map(EncryptionState::permissions)
+            .unwrap_or_default()
     }
     fn set_permissions(&mut self, permissions: Permissions) -> PdfResult<()> {
         if self.is_encrypted() {
@@ -111,8 +112,39 @@ impl ShortFlags for Permissions {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use lopdf::Object;
 
-    // TODO: Test `PdfPerm` trait
+    // Test `PdfPerm` trait
+    fn create_test_document() -> Document {
+        // Cropped from https://github.com/J-F-Liu/lopdf/blob/bcb9244f4c862ca90dea3505339fb67185608175/src/creator.rs#L133-L191
+        let mut doc = Document::new();
+
+        doc.trailer.set(
+            "ID",
+            Object::Array(vec![
+                Object::string_literal(b"ABC"),
+                Object::string_literal(b"DEF"),
+            ]),
+        );
+
+        doc
+    }
+
+    #[test]
+    fn test_permissions() {
+        let mut doc = create_test_document();
+        assert_eq!(doc.permissions(), Permissions::default());
+
+        let pma_permissions =
+            Permissions::PRINTABLE | Permissions::MODIFIABLE | Permissions::ANNOTABLE;
+        doc.set_permissions(pma_permissions).unwrap();
+
+        let mut buffer = Vec::new();
+        doc.save_to(&mut buffer).unwrap();
+
+        let doc = Document::load_mem(&buffer).unwrap();
+        assert_eq!(doc.permissions(), pma_permissions);
+    }
 
     // Test `ShortFlags` trait
     #[test]
