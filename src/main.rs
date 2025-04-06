@@ -20,8 +20,8 @@ fn main() -> Result<()> {
     let (input_path, output_path) = match args.len() {
         0 => {
             println!("Usage: {program_name} [PERMISSION] <INPUT> [OUTPUT]\n");
-            println!("Supported permissions: {}", display_short(Permissions::all()));
-            display_long(Permissions::all());
+            println!("Supported permissions: {}", Permissions::all().summary());
+            display(Permissions::all());
             println!("\nYou can use * to represent all permissions.");
             return Ok(());
         }
@@ -47,7 +47,7 @@ fn main() -> Result<()> {
         debug!("No permissions found, using default");
         Permissions::default()
     });
-    info!("Original permissions: {}", display_short(perm));
+    info!("Original permissions: {}", perm.summary());
 
     // Early exit if no modifications are specified
     let Some(perm_mod) = perm_mod else {
@@ -57,7 +57,7 @@ fn main() -> Result<()> {
 
     // Modify permissions
     perm.apply_modification(perm_mod);
-    info!("Modified permissions: {}", display_short(perm));
+    info!("Modified permissions: {}", perm.summary());
 
     doc.set_permissions(perm)
         .with_context(|| format!("Failed to set permissions for given document: {input_path}"))?;
@@ -82,7 +82,7 @@ fn setup_logger() {
 }
 
 /// Display permissions in the format of a list.
-fn display_long(permissions: Permissions) {
+fn display(permissions: Permissions) {
     for (short, flag) in Permissions::SHORT_FLAGS.iter().zip(Permissions::FLAGS) {
         let perm = flag.value();
         let name = flag.name();
@@ -92,18 +92,4 @@ fn display_long(permissions: Permissions) {
             println!("- [{short}] {name}");
         }
     }
-}
-
-/// Display permissions in a one-line compact format.
-fn display_short(permissions: Permissions) -> String {
-    let mut result = String::new();
-    for (short, flag) in Permissions::SHORT_FLAGS.iter().zip(Permissions::FLAGS) {
-        let perm = flag.value();
-        if permissions.contains(*perm) {
-            result.push(*short);
-        } else {
-            result.push('-');
-        }
-    }
-    result
 }

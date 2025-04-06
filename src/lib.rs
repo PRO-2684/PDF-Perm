@@ -90,6 +90,18 @@ pub trait ShortFlags: Flags + Copy {
             _ => warn!("Invalid modification: {modification}"),
         }
     }
+    /// Returns a concise summary of the flags, with short flag for set flags and `-` for unset flags.
+    fn summary(&self) -> String {
+        let mut summary = String::with_capacity(Self::SHORT_FLAGS.len());
+        for (short, flag) in Self::SHORT_FLAGS.iter().zip(Self::FLAGS) {
+            if self.contains(*flag.value()) {
+                summary.push(*short);
+            } else {
+                summary.push('-');
+            }
+        }
+        summary
+    }
 }
 
 impl ShortFlags for Permissions {
