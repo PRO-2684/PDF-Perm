@@ -73,13 +73,13 @@ To disallow all permissions, use `-*`.
 pdf-perm [PERMISSION] <INPUT> [OUTPUT]
 ```
 
-| Argument Length | Interpretation |
-| - | - |
-| 0 | Print help |
-| 1 | `<INPUT>` |
-| 2 | `[PERMISSION] <INPUT>` |
-| 3 | `[PERMISSION] <INPUT> [OUTPUT]` |
-| 4+ | Invalid |
+| Argument Length | Interpretation                  |
+| --------------- | ------------------------------- |
+| 0               | Print help                      |
+| 1               | `<INPUT>`                       |
+| 2               | `[PERMISSION] <INPUT>`          |
+| 3               | `[PERMISSION] <INPUT> [OUTPUT]` |
+| 4+              | Invalid                         |
 
 ### Permission
 
@@ -91,17 +91,17 @@ The permission argument is a string that specify the permissions to be set on th
 
 Then, you can specify the short flags for the permissions you want to add, remove, or set. Valid short flags and their [corresponding constant](https://docs.rs/lopdf/0.36.0/lopdf/encryption/struct.Permissions.html#impl-Permissions) in [`lopdf` crate](https://docs.rs/lopdf/0.36.0/lopdf/) are:
 
-| # | Short Flag | Constant |
-| - | - | - |
-|  3 | `p` | [P]RINTABLE |
-|  4 | `m` | [M]ODIFIABLE |
-|  5 | `c` | [C]OPYABLE |
-|  6 | `a` | [A]NNOTABLE |
-|  9 | `f` | [F]ILLABLE |
-| 10 | `x` | COPYABLE_FOR_ACCESSIBILITY |
-| 11 | `s` | A[S]SEMBLABLE |
-| 12 | `q` | PRINTABLE_IN_HIGH_[Q]UALITY |
-|  / | `*` | All permissions |
+| #   | Short Flag | Constant                      |
+| --- | ---------- | ----------------------------- |
+| 3   | `p`        | **P**RINTABLE                 |
+| 4   | `m`        | **M**ODIFIABLE                |
+| 5   | `c`        | **C**OPYABLE                  |
+| 6   | `a`        | **A**NNOTABLE                 |
+| 9   | `f`        | **F**ILLABLE                  |
+| 10  | `x`        | COPYABLE_FOR_ACCESSIBILITY    |
+| 11  | `s`        | A**S**SEMBLABLE               |
+| 12  | `q`        | PRINTABLE_IN_HIGH_**Q**UALITY |
+| /   | `*`        | All permissions               |
 
 See the [PDF 1.4 ref](https://opensource.adobe.com/dc-acrobat-sdk-docs/pdfstandards/pdfreference1.4.pdf), TABLE 3.15 for more details. Note that the index in the tables are 1-based.
 
