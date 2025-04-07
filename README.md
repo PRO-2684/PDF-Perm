@@ -30,6 +30,12 @@ cargo install pdf-perm
 
 ## Examples
 
+<details><summary>Click to see demo asciicast</summary>
+
+[![asciicast](https://asciinema.org/a/8HjO0gIyUd4e1j4qFsRrF10Zk.svg)](https://asciinema.org/a/8HjO0gIyUd4e1j4qFsRrF10Zk)
+
+</details>
+
 The usage is quite similar to `chmod` command:
 
 ```shell
