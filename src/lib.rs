@@ -19,6 +19,10 @@ pub trait PdfPerm {
     fn permissions(&self) -> Permissions;
     /// Sets the permissions of the PDF document.
     ///
+    /// # Note
+    ///
+    /// You must save the document for the permissions to take effect. See [`Document::save`] and [`Document::save_to`].
+    ///
     /// # Errors
     ///
     /// Returns [`Error::AlreadyEncrypted`] if the document is encrypted, or other variants if operation fails.
