@@ -18,13 +18,16 @@ fn main() -> Result<()> {
 
     // Check if we're running in "DeSec" mode
     if is_desec(&program_path) {
-        let Some(input_path) = args.get(0) else {
-            println!("DeSec mode activated!");
-            println!("Usage: {program_path} <INPUT>");
-            return Ok(());
+        let input_path = match args.into_iter().next() {
+            Some(path) => path,
+            None => {
+                println!("DeSec mode activated!");
+                println!("Usage: {program_path} <INPUT>");
+                prompt_input_path()?
+            },
         };
 
-        return set_permissions(input_path, input_path, Some("=*"));
+        return set_permissions(&input_path, &input_path, Some("=*"));
     }
 
     // Interpret arguments
@@ -128,4 +131,14 @@ fn is_desec(program_path: &str) -> bool {
 
     // Check if the program name equals "desec"
     program_name == "desec"
+}
+
+/// Prompt for input path.
+fn prompt_input_path() -> Result<String> {
+    println!("Please enter the input file path:");
+    let mut input_path = String::new();
+    std::io::stdin()
+        .read_line(&mut input_path)
+        .with_context(|| format!("Failed to read from stdin"))?;
+    Ok(input_path)
 }

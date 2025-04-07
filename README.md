@@ -116,7 +116,7 @@ Path to the output PDF file. If not specified, the input file will be modified i
 
 ## The DeSec Mode
 
-When the last part of the `argv[0]` matches `(pdf-)?desec(ure)?` (case-insensitive, without extension), the program will run in "DeSec" mode. In this mode, the program will only accept one argument, which is the input PDF file. The program will then grant all permissions to the PDF file, effectively removing all restrictions.
+When the last part of the `argv[0]` matches `(pdf-)?desec(ure)?` (case-insensitive, without extension), the program will run in "DeSec" mode. In this mode, the program will only accept one argument, input file path, asking for it if not provided. The program will then grant all permissions to the PDF file, effectively removing all restrictions.
 
 Typically, you can rename the binary or create a symlink as `pdf-desec` or `desec` to enable this mode. In this way, simply dragging and dropping a PDF file onto the binary will remove all restrictions from it.
 
