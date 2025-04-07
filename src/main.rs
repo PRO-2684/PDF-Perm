@@ -4,7 +4,7 @@ use env_logger::Env;
 use log::{debug, info};
 use lopdf::{Document, Permissions};
 use pdf_perm::{PdfPerm, ShortFlags};
-use std::io::Write;
+use std::{io::Write, path::Path};
 
 fn main() -> Result<()> {
     // Setup the logger
@@ -12,14 +12,25 @@ fn main() -> Result<()> {
 
     // Collect command line arguments
     let mut iter = std::env::args();
-    let program_name = iter.next().unwrap_or_else(|| "pdf-perm".to_string());
+    let program_path = iter.next().unwrap_or_else(|| "pdf-perm".to_string());
     let args: Vec<_> = iter.collect();
     let mut perm_mod = None;
+
+    // Check if we're running in "DeSec" mode
+    if is_desec(&program_path) {
+        let Some(input_path) = args.get(0) else {
+            println!("DeSec mode activated!");
+            println!("Usage: {program_path} <INPUT>");
+            return Ok(());
+        };
+
+        return set_permissions(input_path, input_path, Some("=*"));
+    }
 
     // Interpret arguments
     let (input_path, output_path) = match args.len() {
         0 => {
-            println!("Usage: {program_name} [PERMISSION] <INPUT> [OUTPUT]\n");
+            println!("Usage: {program_path} [PERMISSION] <INPUT> [OUTPUT]\n");
             println!("Supported permissions: {}", Permissions::all().summary());
             display(Permissions::all());
             println!("\nYou can use * to represent all permissions.");
@@ -39,9 +50,18 @@ fn main() -> Result<()> {
         _ => bail!("Too many arguments"),
     };
 
+    set_permissions(input_path, output_path, perm_mod.map(|x| x.as_str()))
+}
+
+/// Set permissions.
+fn set_permissions(
+    input_path: &str,
+    output_path: &str,
+    perm_mod: Option<&str>,
+) -> Result<()> {
     // Open the PDF document
     info!("Reading document: {input_path}");
-    let mut doc = Document::load(&input_path)?;
+    let mut doc = Document::load(input_path)?;
     debug!("Encryption state: {:?}", doc.encryption_state);
 
     // Read permissions
@@ -63,7 +83,7 @@ fn main() -> Result<()> {
 
     // Save the document
     info!("Saving document to {output_path}");
-    doc.save(&output_path)
+    doc.save(output_path)
         .with_context(|| format!("Failed to save document: {output_path}"))?;
 
     Ok(())
@@ -91,4 +111,21 @@ fn display(permissions: Permissions) {
             println!("- [{short}] {name}");
         }
     }
+}
+
+/// Determine whether we're running in "DeSec" mode.
+fn is_desec(program_path: &str) -> bool {
+    // Get program name from path
+    let path = Path::new(program_path);
+    let file_name = path.file_stem().unwrap_or_default();
+    let program_name = file_name.to_str().unwrap_or_default().to_lowercase();
+
+    // (pdf-)?desec(ure)?
+    // Strip leading `pdf-` if present
+    let program_name = program_name.strip_prefix("pdf-").unwrap_or(&program_name);
+    // Strip trailing `ure` if present
+    let program_name = program_name.strip_suffix("ure").unwrap_or(&program_name);
+
+    // Check if the program name equals "desec"
+    program_name == "desec"
 }

@@ -114,6 +114,12 @@ If this argument is not specified, `pdf-perm` will print the permissions of the 
 
 Path to the output PDF file. If not specified, the input file will be modified in place.
 
+## The DeSec Mode
+
+When the last part of the `argv[0]` matches `(pdf-)?desec(ure)?` (case-insensitive, without extension), the program will run in "DeSec" mode. In this mode, the program will only accept one argument, which is the input PDF file. The program will then grant all permissions to the PDF file, effectively removing all restrictions.
+
+Typically, you can rename the binary or create a symlink as `pdf-desec` or `desec` to enable this mode. In this way, simply dragging and dropping a PDF file onto the binary will remove all restrictions from it.
+
 ## Caveats
 
 - This crate does NOT handle **password protected** PDFs. Consider decrypting them first, or using [pdfrip](https://github.com/mufeedvh/pdfrip) to break the password.
@@ -121,14 +127,15 @@ Path to the output PDF file. If not specified, the input file will be modified i
 
 ## Credits
 
-- [abatsakidis/PDFDeSecure](https://github.com/abatsakidis/PDFDeSecure/tree/master/Example-PDF), for the example PDF file under `tests/` directory.
+- [abatsakidis/PDFDeSecure](https://github.com/abatsakidis/PDFDeSecure/tree/master/Example-PDF), for inspiration and the example PDF file under `tests/` directory.
+- [J-F-Liu/lopdf](https://github.com/J-F-Liu/lopdf), for the `lopdf` crate, which is used to read and write PDF files.
 
 ## TODO
 
+- [ ] Set to `None` if permissions are default
+- [ ] DeSec mode
+- [ ] Preserve `EncryptionVersion`
+- [ ] Allow specifying `EncryptionVersion` if not present
 - [x] Implement `chmod` like syntax (`-`, `+`, `=`)
 - [x] Extended syntax
     - [x] `*` for all permissions
-- [ ] Set to `None` if permissions are default
-- [ ] If executed with last part of `argv[0]` matches `(pdf-)?desec(ure)?(\.exe)?` (case-insensitive), defaults to enabling all permissions instead of inheriting from the original file
-- [ ] Preserve `EncryptionVersion`
-- [ ] Allow specifying `EncryptionVersion` if not present

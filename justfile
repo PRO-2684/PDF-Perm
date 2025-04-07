@@ -21,7 +21,6 @@ run *args:
 test *args:
     cargo test {{args}}
 
-
 # Set or get version
 [doc("Set or get \u{001b}[4mv\u{001b}[24mersion")]
 version VERSION="none":
