@@ -133,9 +133,9 @@ Typically, you can rename the binary or create a symlink as `pdf-desec` or `dese
 ## TODO
 
 - [ ] Set to `None` if permissions are default
-- [ ] DeSec mode
 - [ ] Preserve `EncryptionVersion`
 - [ ] Allow specifying `EncryptionVersion` if not present
 - [x] Implement `chmod` like syntax (`-`, `+`, `=`)
 - [x] Extended syntax
     - [x] `*` for all permissions
+- [x] DeSec mode
