@@ -68,6 +68,8 @@ To grant all permissions, use `+*` or `=*`; to reject all permissions, use `-*`:
 pdf-perm +* confidential.pdf declassified.pdf
 ```
 
+Some example PDF files are provided in the [`samples`](./samples/) directory. You can use them to test the program.
+
 ## Usage
 
 ```shell
@@ -133,7 +135,7 @@ Typically, you can rename the binary or create a symlink as `pdf-desec` or `dese
 
 ## Credits
 
-- [abatsakidis/PDFDeSecure](https://github.com/abatsakidis/PDFDeSecure/tree/master/Example-PDF), for inspiration and the example PDF file under `tests/` directory.
+- [abatsakidis/PDFDeSecure](https://github.com/abatsakidis/PDFDeSecure/tree/master/Example-PDF), for the inspiration.
 - [J-F-Liu/lopdf](https://github.com/J-F-Liu/lopdf), for the `lopdf` crate, which is used to read and write PDF files.
 
 ## TODO
