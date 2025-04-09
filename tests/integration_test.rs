@@ -27,4 +27,3 @@ fn check_permissions() {
         }
     }
 }
-

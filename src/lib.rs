@@ -79,7 +79,7 @@ pub trait ShortFlags: Flags + Copy {
             if let Some(flag) = Self::from_char(c) {
                 flags.insert(flag);
             } else {
-                warn!("Invalid permission character: {c}");
+                warn!("Invalid short flag: {c}");
             }
         }
         flags
@@ -92,7 +92,7 @@ pub trait ShortFlags: Flags + Copy {
             "+" => self.insert(flags_mod), // Set given flags
             "-" => self.remove(flags_mod), // Unset given flags
             "=" => *self = flags_mod,      // Set to given flags
-            _ => warn!("Invalid modification: {modification}"),
+            _ => warn!("Invalid modification indicator: {modification}"),
         }
     }
     /// Returns a concise summary of the flags, with short flag for set flags and `-` for unset flags.

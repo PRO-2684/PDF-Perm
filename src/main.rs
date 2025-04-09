@@ -24,7 +24,7 @@ fn main() -> Result<()> {
                 println!("DeSec mode activated!");
                 println!("Usage: {program_path} <INPUT>");
                 prompt_input_path()?
-            },
+            }
         };
 
         return set_permissions(&input_path, &input_path, Some("=*"));
@@ -57,11 +57,7 @@ fn main() -> Result<()> {
 }
 
 /// Set permissions.
-fn set_permissions(
-    input_path: &str,
-    output_path: &str,
-    perm_mod: Option<&str>,
-) -> Result<()> {
+fn set_permissions(input_path: &str, output_path: &str, perm_mod: Option<&str>) -> Result<()> {
     // Open the PDF document
     info!("Reading document: {input_path}");
     let mut doc = Document::load(input_path)?;
