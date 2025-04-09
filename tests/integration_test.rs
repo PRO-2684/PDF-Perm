@@ -4,14 +4,14 @@ use std::path::Path;
 
 fn check_permission(path: &Path) {
     let file_stem = path.file_stem().unwrap().to_str().unwrap();
-    let (expected_summary, _) = file_stem.split_once(' ').unwrap();
+    let (expected_summary, name) = file_stem.split_once('.').unwrap();
 
     let doc = Document::load(path).unwrap();
     let permissions = doc.permissions();
     let summary = permissions.summary();
 
     assert_eq!(expected_summary, summary);
-    println!("{}: {summary}", path.display());
+    println!("{name}: {summary}");
 }
 
 #[test]
