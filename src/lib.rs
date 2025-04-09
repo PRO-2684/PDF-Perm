@@ -41,6 +41,12 @@ impl PdfPerm for Document {
             error!("Does not support setting permissions on encrypted documents");
             return Err(Error::AlreadyEncrypted);
         }
+
+        if permissions == Permissions::default() {
+            debug!("Skipping encryption since permissions are default");
+            return Ok(());
+        }
+
         let version = EncryptionVersion::V1 {
             document: self,
             owner_password: "",
