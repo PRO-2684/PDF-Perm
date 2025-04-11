@@ -35,7 +35,7 @@ version VERSION="none":
 set-version VERSION:
     # Set version in Cargo.toml
     sed -i "s/^version = \".*\"/version = \"{{VERSION}}\"/" Cargo.toml
-    cargo generate-lockfile
+    cargo update
     # Add changes to git
     git add Cargo.toml Cargo.lock
     # Commit changes
